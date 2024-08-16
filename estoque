@@ -1,0 +1,54 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Dados fictícios de estoque
+data_estoque = {
+    'Data': pd.date_range(start='2024-08-01', end='2024-08-31'),
+    'Produto': ['Farinha de Trigo', 'Ingredientes para Cupcakes'] * 15 + ['Farinha de Trigo'],
+    'Estoque Inicial': [50, 30] * 15 + [50],
+    'Estoque Final': [20, 50] * 15 + [10]
+}
+
+df_estoque = pd.DataFrame(data_estoque)
+
+# Análise dos níveis de estoque
+estoque_diario = df_estoque.groupby(['Data', 'Produto'])['Estoque Final'].mean().unstack()
+
+# Gráfico de nível de estoque
+plt.figure(figsize=(12, 6))
+estoque_diario.plot(kind='line', marker='o')
+plt.title('Nível de Estoque Diário - Agosto de 2024')
+plt.xlabel('Data')
+plt.ylabel('Nível de Estoque')
+plt.grid(True)
+plt.tight_layout()
+plt.savefig('nivel_estoque.png')
+plt.show()
+
+# Produtos em falta
+estoque_falta = df_estoque[df_estoque['Estoque Final'] < 10]['Produto'].value_counts()
+
+# Relatório
+relatorio_estoque = f"""
+**Relatório de Análise de Estoque**
+
+Data: Agosto de 2024
+
+**Objetivo:**
+Avaliar o nível de estoque para otimizar o gerenciamento e reduzir desperdícios.
+
+**Método:**
+Analisamos os dados de estoque usando Pandas e criamos visualizações para mostrar os níveis de estoque ao longo do mês.
+
+**Resultados:**
+- **Produto com maior sobra:** Ingredientes para Cupcakes
+- **Produto em falta:** Farinha de Trigo (2 dias sem estoque)
+
+**Gráfico 1: Nível de Estoque**
+![Gráfico de Nível de Estoque](nivel_estoque.png)
+
+**Conclusão:**
+Há uma sobra excessiva de ingredientes para cupcakes e falta de farinha de trigo em alguns dias. Recomenda-se ajustar as compras para melhor alinhar com a demanda e evitar a falta de itens essenciais.
+"""
+
+print(relatorio_estoque)
