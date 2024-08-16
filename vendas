@@ -1,0 +1,58 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Dados fictícios de vendas
+data_vendas = {
+'Data': pd.date_range(start='2024-08-01', end='2024-08-31'),
+'Produto': ['Bolo de Chocolate', 'Cupcake de Baunilha'] * 15 + ['Bolo de Chocolate'],
+'Valor': [200, 50] * 15 + [200],
+'Quantidade': [10, 5] * 15 + [10]
+}
+
+df_vendas = pd.DataFrame(data_vendas)
+
+# Análise das vendas por dia
+df_vendas['Dia'] = df_vendas['Data'].dt.day_name()
+vendas_diarias = df_vendas.groupby('Dia')['Valor'].sum()
+
+# Gráfico de vendas diárias
+plt.figure(figsize=(10, 6))
+vendas_diarias.plot(kind='bar', color='skyblue')
+plt.title('Vendas Diárias - Agosto de 2024')
+plt.xlabel('Dia da Semana')
+plt.ylabel('Valor em R$')
+plt.xticks(rotation=45)
+plt.grid(True)
+plt.tight_layout()
+plt.savefig('vendas_diarias.png')
+plt.show()
+
+# Análise de produtos mais vendidos
+produto_vendas = df_vendas.groupby('Produto')['Valor'].sum().sort_values(ascending=False)
+
+# Relatório
+relatorio_vendas = f"""
+*Relatório de Análise de Vendas Mensais*
+
+Data: Agosto de 2024
+
+*Objetivo:*
+Analisar o desempenho das vendas para identificar padrões e tendências.
+
+*Método:*
+Utilizamos o Pandas para importar e limpar os dados de vendas de agosto de 2024, seguido pela geração de gráficos e estatísticas descritivas.
+
+*Resultados:*
+- *Produto mais vendido:* {produto_vendas.idxmax()}
+- *Total de Vendas:* R$ {df_vendas['Valor'].sum():,.2f}
+- *Dia com maior venda:* {vendas_diarias.idxmax()} (R$ {vendas_diarias.max():,.2f})
+- *Produto menos vendido:* {produto_vendas.idxmin()}
+
+*Gráfico 1: Vendas Diárias*
+![Gráfico de Vendas Diárias](vendas_diarias.png)
+
+*Conclusão:*
+O {produto_vendas.idxmax()} é o produto mais popular e as vendas são mais altas nos {vendas_diarias.idxmax()}. Recomenda-se aumentar a produção de bolos e considerar promoções para os dias da semana.
+"""
+
+print(relatorio_vendas)
